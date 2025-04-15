@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Profilo Atleta</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, select { margin: 5px; padding: 5px; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
+  </style>
+</head>
+<body>
+
+  <h2>Profilo Atleta</h2>
+
+  <form id="profileForm">
+    <h3>Dati Anagrafici</h3>
+    Nome: <input type="text" id="nome"><br>
+    Cognome: <input type="text" id="cognome"><br>
+    Data di nascita: <input type="date" id="dataNascita"><br>
+    Email: <input type="email" id="email"><br>
+    Telefono: <input type="tel" id="telefono"><br>
+
+    <h3>Partner</h3>
+    Nome partner: <input type="text" id="partner"><br>
+
+    <h3>Risultati Annuali</h3>
+    Gara: <input type="text" id="gara">
+    Posizione: <input type="number" id="posizione" min="1" max="100">
+    <button type="button" onclick="aggiungiRisultato()">Aggiungi Risultato</button>
+  </form>
+
+  <table id="tabellaRisultati">
+    <thead>
+      <tr>
+        <th>Gara</th>
+        <th>Posizione</th>
+        <th>Punteggio</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <h3>Punteggio Totale: <span id="punteggioTotale">0</span></h3>
+  <h3>Ranking: <span id="ranking">Non classificato</span></h3>
+
+  <script>
+    let risultati = [];
+
+    function calcolaPunteggio(posizione) {
+      return Math.max(0, 100 - (posizione * 2)); // Es: 1° = 98 pt, 2° = 96 pt
+    }
+
+    function aggiornaTabella() {
+      const tbody = document.getElementById('tabellaRisultati').querySelector('tbody');
+      tbody.innerHTML = '';
+
+      let punteggioTotale = 0;
+
+      risultati.forEach(r => {
+        const row = `<tr>
+          <td>${r.gara}</td>
+          <td>${r.posizione}</td>
+          <td>${r.punti}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+        punteggioTotale += r.punti;
+      });
+
+      document.getElementById('punteggioTotale').textContent = punteggioTotale;
+      document.getElementById('ranking').textContent = generaRanking(punteggioTotale);
+    }
+
+    function aggiungiRisultato() {
+      const gara = document.getElementById('gara').value;
+      const posizione = parseInt(document.getElementById('posizione').value);
+      if (!gara || isNaN(posizione)) return alert("Inserisci tutti i campi");
+
+      const punti = calcolaPunteggio(posizione);
+      risultati.push({ gara, posizione, punti });
+
+      aggiornaTabella();
+
+      // Reset input
+      document.getElementById('gara').value = '';
+      document.getElementById('posizione').value = '';
+    }
+
+    function generaRanking(punteggio) {
+      if (punteggio >= 500) return "Oro";
+      if (punteggio >= 300) return "Argento";
+      if (punteggio >= 100) return "Bronzo";
+      return "Non classificato";
+    }
+  </script>
+
+</body>
+</html>
